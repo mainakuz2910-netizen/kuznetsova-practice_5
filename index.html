@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Коллекция настольных игр</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+
+        body {
+            background: #f4f7f6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+
+        .app-layout {
+            display: flex;
+            gap: 20px;
+            max-width: 1300px;
+            margin: 0 auto;
+            align-items: flex-start;
+        }
+
+        
+        .panel {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+        }
+
+        
+        .filters-panel {
+            width: 280px;
+            flex-shrink: 0;
+            position: sticky;
+            top: 20px;
+        }
+
+        .filters-panel h3 {
+            margin-top: 0;
+            border-bottom: 2px solid #edf2f7;
+            padding-bottom: 10px;
+        }
+
+        .filter-group {
+            margin-bottom: 25px;
+        }
+
+        .filter-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            color: #4a5568;
+        }
+
+        .checkbox-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        .checkbox-item input {
+            margin-right: 8px;
+            cursor: pointer;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            margin-bottom: 5px;
+        }
+
+        .range-values {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: #718096;
+        }
+
+        
+        .games-panel {
+            flex-grow: 1;
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 20px;
+        }
+
+        .game-card {
+            background: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.2s;
+        }
+
+        .game-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .game-img {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+            background: #cbd5e0;
+        }
+
+        .game-info {
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .game-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 0 0 5px 0;
+            color: #2d3748;
+        }
+
+        .game-genre {
+            font-size: 12px;
+            color: #fff;
+            background: #3182ce;
+            padding: 2px 8px;
+            border-radius: 12px;
+            align-self: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .game-meta {
+            font-size: 13px;
+            color: #718096;
+            margin-bottom: 10px;
+        }
+
+        .game-review {
+            font-size: 14px;
+            color: #4a5568;
+            font-style: italic;
+            margin-bottom: 15px;
+            flex-grow: 1;
+        }
+
+        
+        .rating {
+            display: flex;
+            gap: 3px;
+            font-size: 20px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .star {
+            color: #cbd5e0;
+            transition: color 0.1s;
+        }
+
+        .star.active {
+            color: #f6ad55;
+        }
+
+        .star:hover {
+            color: #fbd38d;
+        }
+
+        
+        .form-panel {
+            width: 320px;
+            flex-shrink: 0;
+        }
+
+        .form-panel h3 {
+            margin-top: 0;
+            border-bottom: 2px solid #edf2f7;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 4px;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
+            font-size: 14px;
+            outline: none;
+            transition: border 0.2s;
+        }
+
+        .form-group input:focus, .form-group textarea:focus {
+            border-color: #3182ce;
+        }
+
+        .form-group input.error {
+            border-color: #e53e3e;
+            background: #fff5f5;
+        }
+
+        .error-text {
+            color: #e53e3e;
+            font-size: 11px;
+            display: none;
+            margin-top: 2px;
+        }
+
+        .error-text.visible {
+            display: block;
+        }
+
+        button.btn-submit {
+            width: 100%;
+            padding: 12px;
+            background: #38a169;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 10px;
+        }
+
+        button.btn-submit:hover {
+            background: #2f855a;
+        }
+
+        .empty-msg {
+            text-align: center;
+            color: #a0aec0;
+            grid-column: 1 / -1;
+            padding: 40px 0;
+            font-size: 18px;
+        }
+
+        @media (max-width: 1100px) {
+            .app-layout { flex-wrap: wrap; }
+            .filters-panel { width: 100%; position: static; }
+            .form-panel { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>🎲 Коллекция настольных игр</h1>
+
+    <div class="app-layout">
+
+        
+        <div class="panel filters-panel">
+            <h3>Фильтры</h3>
+            
+            <div class="filter-group">
+                <label>Жанры</label>
+                <div class="checkbox-list" id="genreFilters">
+                    
+                </div>
+            </div>
+
+            <div class="filter-group">
+                <label>Игроков (от <span id="playersVal">1</span>)</label>
+                <input type="range" id="playersFilter" min="1" max="10" value="1">
+            </div>
+
+            <div class="filter-group">
+                <label>Время партии (до <span id="timeVal">600</span> мин)</label>
+                <input type="range" id="timeFilter" min="5" max="600" step="5" value="600">
+            </div>
+        </div>
+
+        
+        <div class="panel games-panel">
+            <div class="games-grid" id="gamesContainer">
+                <!-- Карточки игр выводятся здесь -->
+            </div>
+        </div>
+
+        
+        <div class="panel form-panel">
+            <h3>Добавить игру</h3>
+            <form id="gameForm" onsubmit="addGame(event)">
+                <div class="form-group">
+                    <label>Название</label>
+                    <input type="text" id="f-name" placeholder="Например: Catan" oninput="validateField('name')">
+                    <div class="error-text" id="err-name">Только буквы/цифры, 2-100 символов</div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Жанр</label>
+                    <select id="f-genre">
+                        <option value="Стратегия">Стратегия</option>
+                        <option value="Экономическая">Экономическая</option>
+                        <option value="Кооперативная">Кооперативная</option>
+                        <option value="Вечеринка">Вечеринка</option>
+                        <option value="Семейная">Семейная</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Мин. игроков (1-20)</label>
+                    <input type="text" id="f-playersMin" placeholder="2" oninput="validateField('playersMin')">
+                    <div class="error-text" id="err-playersMin">Число от 1 до 20</div>
+                </div>
+
+                <div class="form-group">
+                    <label>Макс. игроков (1-20)</label>
+                    <input type="text" id="f-playersMax" placeholder="4" oninput="validateField('playersMax')">
+                    <div class="error-text" id="err-playersMax">Число от 1 до 20</div>
+                </div>
+
+                <div class="form-group">
+                    <label>Время (мин, 5-600)</label>
+                    <input type="text" id="f-time" placeholder="60" oninput="validateField('time')">
+                    <div class="error-text" id="err-time">Число от 5 до 600</div>
+                </div>
+
+                <div class="form-group">
+                    <label>Ссылка на фото (URL)</label>
+                    <input type="text" id="f-image" placeholder="https://..." oninput="saveDraft()">
+                </div>
+
+                <div class="form-group">
+                    <label>Рецензия</label>
+                    <textarea id="f-review" rows="2" placeholder="Ваши впечатления..." oninput="saveDraft()"></textarea>
+                </div>
+
+                <button type="submit" class="btn-submit">Добавить в коллекцию</button>
+            </form>
+        </div>
+
+    </div>
+
+    <script>
+        
+        
+        
+        let games = JSON.parse(localStorage.getItem('boardGames')) || [
+            { id: 1, name: "Catan", genre: "Стратегия", playersMin: 3, playersMax: 4, time: 90, rating: 5, review: "Классика, которая никогда не надоедает.", image: "https://images.unsplash.com/photo-1611374243147-44a702c2d44c?w=500&q=80" },
+            { id: 2, name: "Codenames", genre: "Вечеринка", playersMin: 2, playersMax: 8, time: 15, rating: 4, review: "Отличная игра для больших компаний.", image: "https://images.unsplash.com/photo-1632501641765-e568d28b0015?w=500&q=80" },
+            { id: 3, name: "Pandemic", genre: "Кооперативная", playersMin: 2, playersMax: 4, time: 45, rating: 5, review: "Заставляет попотеть, спасая мир.", image: "https://images.unsplash.com/photo-1585504198199-20277593b94f?w=500&q=80" }
+        ];
+
+        const genresList = ["Стратегия", "Экономическая", "Кооперативная", "Вечеринка", "Семейная"];
+
+        
+
+        const gamesContainer = document.getElementById('gamesContainer');
+        const genreFilters = document.getElementById('genreFilters');
+        const playersFilter = document.getElementById('playersFilter');
+        const timeFilter = document.getElementById('timeFilter');
+        
+        
+        genresList.forEach(genre => {
+            const label = document.createElement('label');
+            label.className = 'checkbox-item';
+            label.innerHTML = `<input type="checkbox" value="${genre}" checked onchange="renderGames()"> ${genre}`;
+            genreFilters.appendChild(label);
+        });
+
+        
+        playersFilter.addEventListener('input', (e) => {
+            document.getElementById('playersVal').innerText = e.target.value;
+            renderGames();
+        });
+        
+        timeFilter.addEventListener('input', (e) => {
+            document.getElementById('timeVal').innerText = e.target.value;
+            renderGames();
+        });
+
+        
+        function renderGames() {
+            gamesContainer.innerHTML = '';
+
+            
+            const checkedGenres = Array.from(document.querySelectorAll('#genreFilters input:checked')).map(cb => cb.value);
+            
+            
+            const minPlayers = parseInt(playersFilter.value);
+            const maxTime = parseInt(timeFilter.value);
+
+            
+            const filteredGames = games.filter(game => {
+                const genreMatch = checkedGenres.includes(game.genre);
+                
+                const playersMatch = game.playersMax >= minPlayers; 
+                const timeMatch = game.time <= maxTime;
+                return genreMatch && playersMatch && timeMatch;
+            });
+
+            if (filteredGames.length === 0) {
+                gamesContainer.innerHTML = '<div class="empty-msg">Игры по таким фильтрам не найдены </div>';
+                return;
+            }
+
+            
+            filteredGames.forEach(game => {
+                const card = document.createElement('div');
+                card.className = 'game-card';
+                card.innerHTML = `
+                    <img src="${game.image || 'https://via.placeholder.com/300x160?text=No+Image'}" class="game-img" alt="${game.name}">
+                    <div class="game-info">
+                        <h3 class="game-title">${game.name}</h3>
+                        <span class="game-genre">${game.genre}</span>
+                        <div class="game-meta">
+                            👤 ${game.playersMin}-${game.playersMax} • ⏱ ${game.time} мин
+                        </div>
+                        <div class="game-review">"${game.review || 'Без рецензии'}"</div>
+                        <div class="rating" data-id="${game.id}">
+                            ${[1,2,3,4,5].map(star => 
+                                `<span class="star ${star <= game.rating ? 'active' : ''}" onclick="rateGame(${game.id}, ${star})">★</span>`
+                            ).join('')}
+                        </div>
+                    </div>
+                `;
+                gamesContainer.appendChild(card);
+            });
+        }
+
+        
+        function rateGame(id, rating) {
+            const game = games.find(g => g.id === id);
+            if (game) {
+                game.rating = rating;
+                localStorage.setItem('boardGames', JSON.stringify(games)); // Сохраняем
+                renderGames(); // Перерисовываем
+            }
+        }
+
+        
+        const regexes = {
+            name: /^[A-Za-zА-Яа-я0-9\s]{2,100}$/,
+            players: /^(?:[1-9]|1[0-9]|20)$/,
+            time: /^(?:[5-9]|[1-9]\d|[1-5]\d{2}|600)$/
+        };
+
+        function validateField(fieldName) {
+            const input = document.getElementById(`f-${fieldName}`);
+            const error = document.getElementById(`err-${fieldName}`);
+            let isValid = false;
+
+            if (fieldName === 'name') {
+                isValid = regexes.name.test(input.value.trim());
+            } 
+            else if (fieldName === 'playersMin' || fieldName === 'playersMax') {
+                isValid = regexes.players.test(input.value.trim());
+            } 
+            else if (fieldName === 'time') {
+                isValid = regexes.time.test(input.value.trim());
+            }
+
+            if (isValid) {
+                input.classList.remove('error');
+                if (error) error.classList.remove('visible');
+            } else {
+                input.classList.add('error');
+                if (error) error.classList.add('visible');
+            }
+            
+            saveDraft();
+            return isValid;
+        }
+
+        function addGame(e) {
+            e.preventDefault(); 
+
+            
+            const isNameValid = validateField('name');
+            const isMinValid = validateField('playersMin');
+            const isMaxValid = validateField('playersMax');
+            const isTimeValid = validateField('time');
+
+            const playersMin = parseInt(document.getElementById('f-playersMin').value);
+            const playersMax = parseInt(document.getElementById('f-playersMax').value);
+
+            if (!isNameValid || !isMinValid || !isMaxValid || !isTimeValid) {
+                alert('Пожалуйста, исправьте ошибки в форме.');
+                return;
+            }
+
+            if (playersMin > playersMax) {
+                alert('Минимальное количество игроков не может быть больше максимального!');
+                return;
+            }
+
+            
+            const newGame = {
+                id: Date.now(), 
+                name: document.getElementById('f-name').value.trim(),
+                genre: document.getElementById('f-genre').value,
+                playersMin: playersMin,
+                playersMax: playersMax,
+                time: parseInt(document.getElementById('f-time').value),
+                rating: 0,
+                review: document.getElementById('f-review').value.trim(),
+                image: document.getElementById('f-image').value.trim()
+            };
+
+            
+            games.push(newGame);
+            localStorage.setItem('boardGames', JSON.stringify(games));
+
+            
+            document.getElementById('gameForm').reset();
+            sessionStorage.removeItem('gameDraft');
+            
+            
+            document.querySelectorAll('.form-group input').forEach(i => i.classList.remove('error'));
+            document.querySelectorAll('.error-text').forEach(e => e.classList.remove('visible'));
+
+            
+            renderGames();
+        }
+
+       
+
+        const draftFields = ['f-name', 'f-playersMin', 'f-playersMax', 'f-time', 'f-image', 'f-review', 'f-genre'];
+
+        function saveDraft() {
+            const draft = {};
+            draftFields.forEach(id => {
+                draft[id] = document.getElementById(id).value;
+            });
+            sessionStorage.setItem('gameDraft', JSON.stringify(draft));
+        }
+
+        function loadDraft() {
+            const draft = JSON.parse(sessionStorage.getItem('gameDraft'));
+            if (draft) {
+                draftFields.forEach(id => {
+                    if (draft[id] !== undefined) {
+                        document.getElementById(id).value = draft[id];
+                    }
+                });
+            }
+        }
+
+        
+        draftFields.forEach(id => {
+            document.getElementById(id).addEventListener('input', saveDraft);
+            document.getElementById(id).addEventListener('change', saveDraft);
+        });
+
+        
+        
+        
+        loadDraft();
+        
+       
+        renderGames();
+
+    </script>
+</body>
+</html>
